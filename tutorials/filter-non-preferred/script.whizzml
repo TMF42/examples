@@ -6,6 +6,6 @@
     (sort (iterate (ids [] id (keys fields))
             (if ((fields id) "preferred" true) (append ids id) ids)))))
 
-(define output-dataset-id
-  (wait (create-dataset input-dataset-id
-                        {"input_fields" (preferred-fields input-dataset-id)})))
+(define my-dataset
+  (wait (create-dataset a-dataset
+                        {"input_fields" (preferred-fields a-dataset)})))
