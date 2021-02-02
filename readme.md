@@ -74,6 +74,38 @@ By convention, when the artifact is a library, the files are called
   extended with new fields containing the scaled values.
 - `stepwise-regression` Finds the best features for building a
   logistic regression using a greedy algorithm.
+- `ordinal-encoder` Given a dataset, encodes categorical fields using ordinal
+  ecoding, which uses a single column of integers to represent field classes
+  (levels).
+- `batch-explanations` A simple way to perform many predictions with
+  explanations
+- `best-first-cv` Extends the `best-first` code to find the list of
+  fields in your dataset that produce the best models. Allows iteration and
+  uses cross-validation.
+- `multi-label` Classification for datasets with a
+  multi-label (items) objective field.
+- `recursive-feature-elimination` Script to select the n best features for
+  modeling a given dataset, using a recursive algorithm
+- `name-clusters`  Script to give names to clusters using important field
+  names and their values
+- `dimensionality-reduction` Script for dimensionality reduction using
+  PCA and topic modelling.
+- `fuzzy-norms`: Computing fuzzy-logic T-norms and T-conorms as new dataset features
+- `automl`: Automated Machine Learning withing BigML
+- `correlations-matrix`: Generates a CSV that contains the matrix of
+  correlations between the numeric and categorical fields in a dataset
+- `batch-association-sets`: Adds new features to a dataset by creating new
+  fields based on the combinations that appear in the association rules
+  extracted from it.
+- `supervised-model-quality`: Creates the evaluation associated to the
+  user-given supervised model (fusions excluded). The evaluation is created
+  by splitting the dataset used in the model into a train/test split.
+- `bulk-move`: Moves selected resources in bulk to a user-provided project.
+  The resources to be moved are selected by applying the user-provided
+  filters.
+- `statistical-tests`: Performs statistical tests from a given dataset
+  and creates a report with the results
+- `time-aware cross-validation`: Cross-Validation considering temporal order
 
 ## How to install
 

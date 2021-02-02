@@ -1,0 +1,88 @@
+;; Script to move a bunch of resources selected by user-provided filters
+;; to a destination Project
+
+;; Auxiliary functions to select resources based on usual filters
+;; -- to become a library
+
+(define NON-ALLOWED-TYPES ["project", "execution"])
+(define EMPTY-ID ["Unknown" ""])
+
+(define (list-res project-id
+                  tags
+                  filter-expr
+                  res-types)
+  (let (filter-expr (add-filter filter-expr "project" project-id)
+        filter-expr (add-filter filter-expr "tags__in" tags)
+        res-types (filter (lambda (x) (member? x (resource-types)))
+                          res-types)
+        res-types (if (empty? res-types)
+                      (resource-types)
+                      res-types)
+        res-types (if (!= "" project-id)
+                      (types-in-project project-id res-types)
+                      res-types))
+    [filter-expr (filter-by-expr filter-expr res-types)]))
+
+(define (check-project-id project-id)
+  ;; checks whether the project ID is empty or a real project ID
+  (or (= "project" (resource-type project-id))
+      (member? project-id EMPTY-ID)))
+
+(define (add-filter expr parm value)
+  (if (= value "")
+      expr
+      (assoc expr parm value)))
+
+(define (filter-by-expr expr res-types)
+  (iterate (acc [] type res-types)
+    (let (resp (resources type expr))
+      (log-info "selecting type: " type ", expr: " expr)
+      (concat acc (map (lambda (x) (x "resource")) resp)))))
+
+(define (types-in-project project-id res-types)
+  (let (project (fetch project-id)
+        stats (project "stats" {})
+        project-types (filter (lambda (x) (> (stats [x "count"] 0) 0))
+                              (keys stats))
+        type-pl-fn (lambda (x) (cond  (= "anomaly" x)
+                                        "anomalies"
+                                      (= "statisticaltests" x)
+                                        "statisticaltests"
+                                        (str x "s"))))
+    (filter (lambda (x) (member? (type-pl-fn x) project-types)) res-types)))
+
+;; Function to move the resources
+
+(define (bulk-move destination-id
+                   project-id
+                   tags
+                   filter-expr
+                   res-types
+                   dry-run)
+  (or (check-project-id project-id)
+    (raise "Please, check the project ID"))
+  (or (check-project-id destination-id)
+    (raise "Please, check the project ID"))
+
+  (let (destination-id (if (member? destination-id EMPTY-ID)
+                           (create-project {"name" (EMPTY-ID 0)})
+                           destination-id)
+        [expr ids] (list-res project-id
+                             tags
+                             filter-expr
+                             res-types)
+        counter (iterate (counter {} id ids)
+                  (assoc counter (resource-type id)
+                                 (+ (counter (resource-type id) 0) 1))))
+    (log-info "Selected Resources for: ")
+    (log-info "  " expr)
+    (for (type (keys counter))
+      (log-info "  " type ": " (counter type)))
+    (if dry-run
+        (log-info ids)
+        (for (id ids)
+          (update id {"project" destination-id}))))
+  (not dry-run))
+
+(define moved? (bulk-move destination-project source-project tags
+                          filter-expr res-types dry-run))

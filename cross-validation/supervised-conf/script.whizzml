@@ -1,0 +1,6 @@
+(define cross-validation-output
+  (model-cross-validation slm-id
+                          k-folds
+                          evaluation-options
+                          delete-resources?
+                          stratified?))

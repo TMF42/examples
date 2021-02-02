@@ -2,6 +2,7 @@
   "name": "Model's k-fold cross-validation",
   "description": "k-fold cross-validation for models",
   "kind": "script",
+  "imports": ["../cross-validation-gen"],
   "source_code": "script.whizzml",
   "inputs": [
       {
@@ -56,6 +57,18 @@
           "type": "number",
           "default": -1,
           "description": "Maximum number of nodes in the model, or -1 for all"
+      },
+      {
+          "name": "delete-resources?",
+          "type": "boolean",
+          "default": false,
+          "description": "Delete intermediate resources"
+      },
+      {
+          "name": "stratified?",
+          "type": "boolean",
+          "default": false,
+          "description": "Stratify every k-fold"
       }
   ],
   "outputs": [

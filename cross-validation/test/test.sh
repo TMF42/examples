@@ -15,12 +15,13 @@ run_bigmler --train s3://bigml-public/csv/iris.csv --no-model \
 
 # building the inputs for the test
 prefix='[["dataset-id", "'
-suffix='"]]'
+suffix='"],["model-type", "model"]]'
 text=''
 cat cmd/pre_test/dataset | while read dataset
 do
 echo "$prefix$dataset$suffix" > "test_inputs.json"
 done
+
 log "Testing basic script ----------------------------------"
 # running the execution with the given inputs
 run_bigmler execute --scripts .build/basic/scripts --inputs test_inputs.json \
@@ -36,6 +37,7 @@ if [[ " $file_content " =~ $regex ]]
     else
         echo "basic KO:\n $file_content"
 fi
+
 log "Testing model script ----------------------------------"
 # running the execution with the given inputs
 run_bigmler execute --scripts .build/model/scripts --inputs test_inputs.json \
